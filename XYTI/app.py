@@ -10,14 +10,13 @@ st.markdown("""
         width: 100%; border-radius: 12px; height: 3.8em; 
         background-color: #ffffff; border: 2px solid #1E1E1E; 
         color: #1E1E1E; font-weight: bold; margin-bottom: 10px; 
-        transition: 0.3s;
     }
     .stButton>button:hover { background-color: #1E1E1E; color: white; }
     .result-card { 
         padding: 25px; border-radius: 15px; border: 4px solid #1E1E1E; 
         background-color: #fff; box-shadow: 12px 12px 0px #1E1E1E; margin-top: 20px; 
     }
-    .question-text { font-size: 20px; font-weight: bold; margin-bottom: 25px; color: #1E1E1E; line-height: 1.4; }
+    .question-text { font-size: 19px; font-weight: bold; margin-bottom: 25px; color: #1E1E1E; line-height: 1.5; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -30,30 +29,29 @@ if 'step' not in st.session_state:
     }
     st.session_state.force_result = None
 
-# --- 4. 角色文库 ---
+# 角色结果描述
 results_info = {
-    "普绍波": "【成绩判官】唯分论者。擅长用班费买奖品舔优生，并在全班面前批斗退步者。评：班费买的奖品沉吗？记得别让退学女生的梦找你。",
-    "李旭明": "【白裤幽默家】酷爱白牛仔裤，美其名曰老婆爱干净。实则喜欢调解气氛。评：地板没事吧？我这人挺幽默的。",
+    "普绍波": "【成绩判官】唯分论者。擅长用班费买奖品。评：奖品沉吗？记得别让退学女生的梦找你。",
+    "李旭明": "【白裤幽默家】酷爱白牛仔裤，美其名曰老婆爱干净。评：地板没事吧？我这人挺幽默的。",
     "金冉": "【负责女神】颜值逆天且工作极其认真。评：你是所有人的缪斯，周于人的命都可以给你。",
-    "李春燕": "【火眼金睛】视力堪比孙悟空，主谓宾守护者。评：藏在屁股底下的书也能被你瞬秒，拿出来！",
-    "代世琼": "【阿迪硬汉】每天阿迪全套+二战褪色靴，上课氛围恐怖。评：睡着了？厕所洗脸见。作业有问题去办公室趴着做！",
+    "李春燕": "【火眼金睛】视力堪比孙悟空。评：藏在屁股底下的书也能被你瞬秒，拿出来！",
+    "代世琼": "【阿迪硬汉】每天阿迪全套+二战褪色靴。评：睡着了？厕所洗脸见。作业有问题去办公室趴着做！",
     "邓晶": "【化学特朗普】长得像川普，爱讲黄段子。评：你和语文老师那段‘捉摸不透’的友谊全校熟知。",
-    "李凌": "【反向押题王】声音尖锐，划的重点从来不考，爱讲家事。评：信你得高分？不存在的。",
-    "侯钰淋": "【旅行博主】体育课就是你的PPT旅行展示会。评：凡尔赛文学被你玩明白了，去的地方真多啊。",
+    "李凌": "【反向押题王】声音尖锐，爱讲家事。评：信你得高分？不存在的。",
+    "侯钰淋": "【旅行博主】体育课就是你的PPT旅行展示会。评：凡尔赛文学被你玩明白了。",
     "任帅": "【粉笔刺客】隐忍冷静，很有风度。评：那一根粉笔划出的弧线，是你最后的优雅。",
     "周于人": "【宽容受气包】迷恋金冉。评：即使被粉笔砸头、被嫁祸脚臭，心里也只有金老师布置的3a小单。",
     "易子雨路": "【代氏信徒】对代老师有种近乎宗教的崇拜。评：去办公室近距离接触代老师是你特殊的快乐。"
 }
 
-# --- 5. 答题环节 (文字完全对齐) ---
-
+# --- 4. 答题逻辑 ---
 if st.session_state.step == 0:
-    st.markdown("<h1 style='text-align: center; font-size: 60px;'>XYTI</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; letter-spacing: 2px;'>校园生存图鉴 · 记忆轮回</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>XYTI</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>校园生存图鉴 · 记忆轮回</p>", unsafe_allow_html=True)
     try:
         st.image("images/cover.jpg", use_column_width=True)
     except:
-        st.warning("提示：请在 images 文件夹放入 cover.jpg")
+        st.warning("提示：请确认 images 文件夹中有封面图 cover.jpg")
     if st.button("开启轮回"):
         st.session_state.step = 1
         st.rerun()
@@ -138,20 +136,17 @@ elif st.session_state.step == 11:
     if st.button("C. 特朗普头型"): st.session_state.scores["邓晶"] += 1; st.session_state.step = 12; st.rerun()
     if st.button("D. London Boy卫衣"): st.session_state.scores["侯钰淋"] += 1; st.session_state.step = 12; st.rerun()
 
-# --- 6. 结果结算 ---
+# --- 5. 结果显示 ---
 else:
-    st.markdown("<h2 style='text-align: center;'>XYTI 测试结果</h2>", unsafe_allow_html=True)
     winner = st.session_state.force_result if st.session_state.force_result else max(st.session_state.scores, key=st.session_state.scores.get)
-    st.markdown("<div class='result-card'>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='text-align: center; color: #1E1E1E;'>{winner}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<div class='result-card'><h2 style='text-align: center;'>{winner}</h2>", unsafe_allow_html=True)
     try:
         st.image(f"images/{winner}.jpg", use_column_width=True)
     except:
-        st.info(f"（提示：请确认 images/{winner}.jpg 已上传）")
-    st.markdown(f"<p style='font-size: 18px; line-height: 1.6;'>{results_info[winner]}</p>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-    if st.button("重新开启 XYTI 轮回"):
-        for k in st.session_state.scores: st.session_state.scores[k] = 0
+        st.info(f"（未找到图片：images/{winner}.jpg）")
+    st.markdown(f"<p style='font-size: 18px;'>{results_info[winner]}</p></div>", unsafe_allow_html=True)
+    if st.button("重新开始轮回"):
         st.session_state.step = 0
         st.session_state.force_result = None
+        for k in st.session_state.scores: st.session_state.scores[k] = 0
         st.rerun()
